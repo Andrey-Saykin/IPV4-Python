@@ -19,6 +19,8 @@ def subnet_input(ip):
 
 def convert_to_binary(number):
         binary = bin(number)[2:]
+        print(binary)
+        print('0' * (8 - len(binary)) + binary, )
         return '0' * (8 - len(binary)) + binary
  
 def ip_and_subnet_to_binary(ip_address, subnet_mask):
@@ -120,7 +122,7 @@ def print_colored_binary(binary_string, color_1, color_0):
             print("\033[{}m{}\033[0m".format(color_1, bit), end='')
         elif bit == '0':
             print("\033[{}m{}\033[0m".format(color_0, bit), end='')
-        if i in (8, 16, 24):
+        elif bit == '.':
             print('.', end='')  # Add dot after each octet
 
 if __name__ == '__main__':
@@ -131,11 +133,10 @@ if __name__ == '__main__':
     net_address, broadcast_address, total_ips, host_ips = calculate_addresses(ip, subnet_mask)
     network_bits, host_bits = calculate_bits(subnet_mask)
 
-    print_colored_binary(ip_binary, '92', '91')
-
     print('\nIP in Binär:', ip_binary)
-    print('Netzmaske in Binär:', subnet_binary)
-    print('Anzahl an IPs:', total_ips)
+    print('Netzmaske in Binär:', end=' ')
+    print_colored_binary(subnet_binary, '92', '91')
+    print('\nAnzahl an IPs:', total_ips)
     print('Anzahl an Host-Adressen', host_ips)
     print('Netzadresse:', net_address)
     print('Broadcast Adresse:', broadcast_address)
