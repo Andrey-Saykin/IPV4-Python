@@ -76,7 +76,7 @@ def calculate_addresses(ip, subnet_mask):
         broadcast_address = '.'.join(str(int(a, 2) | (255 - int(b, 2))) for a, b in zip(binary_ip_sections, binary_subnet_sections))
 
         # Calculate total IP addresses, including network and broadcast addresses
-        total_ip_addresses = 2**(32 - binary_subnet.count('0'))
+        total_ip_addresses = 2**(binary_subnet.count('0'))
 
         # Calculate the number of host addresses (excluding network and broadcast addresses)
         host_addresses = total_ip_addresses - 2
