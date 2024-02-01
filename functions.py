@@ -1,6 +1,3 @@
-import ipaddress
-import pytest
-
 # def is_valid_ip(ip):
 #     try:
 #         ipaddress.IPv4Address(ip)

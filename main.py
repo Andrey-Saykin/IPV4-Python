@@ -1,5 +1,3 @@
-import ipaddress
-import pytest
 import functions as func
 
 def ip_input():
