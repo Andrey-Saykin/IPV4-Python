@@ -17,6 +17,15 @@
 #         return False
     
 def is_valid_ip(ip):
+    """
+    Check if the given IP address is valid.
+
+    Args:
+        ip (str): The IP address to be checked.
+
+    Returns:
+        bool: True if the IP address is valid, False otherwise.
+    """
     parts = ip.split('.')
     if len(parts) != 4:
         return False
@@ -26,6 +35,16 @@ def is_valid_ip(ip):
     return True
 
 def is_valid_subnet_mask(ip, subnet_mask):
+    """
+    Check if the given subnet mask is valid for the given IP address.
+
+    Args:
+        ip (str): The IP address.
+        subnet_mask (str): The subnet mask.
+
+    Returns:
+        bool: True if the subnet mask is valid, False otherwise.
+    """
     if not is_valid_ip(ip) or not is_valid_ip(subnet_mask):
         return False
 
@@ -43,6 +62,15 @@ def is_valid_subnet_mask(ip, subnet_mask):
     return True
 
 def mbinary(ip):
+    """
+    Convert the given IP address to binary representation.
+
+    Args:
+        ip (str): The IP address to be converted.
+
+    Returns:
+        None
+    """
     string_ip = str(ip)
     splitted_ip = string_ip.split('.')
     octed_list = []
