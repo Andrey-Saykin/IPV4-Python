@@ -202,3 +202,4 @@ if __name__ == '__main__':
     print(f'Anzahl der Netzwerk-Bits: {network_bits}')
     print(f'Anzahl der Host-Bits: {host_bits}')
     print("-----------------------------------------")
+    input('Drücke Enter zum Beenden')
