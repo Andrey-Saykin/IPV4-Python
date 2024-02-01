@@ -1,4 +1,5 @@
 import ipaddress
+import pytest
 import functions as func
 
 def ip_input():
@@ -19,8 +20,6 @@ def subnet_input(ip):
 
 def convert_to_binary(number):
         binary = bin(number)[2:]
-        print(binary)
-        print('0' * (8 - len(binary)) + binary, )
         return '0' * (8 - len(binary)) + binary
  
 def ip_and_subnet_to_binary(ip_address, subnet_mask):
@@ -125,6 +124,29 @@ def print_colored_binary(binary_string, color_1, color_0):
         elif bit == '.':
             print('.', end='')  # Add dot after each octet
 
+
+def colorize_ip(ip, network_bits):
+    parts = ip.split('.')
+    binary_parts = [format(int(part), '08b') for part in parts]
+
+    # ANSI escape codes for red and green
+    red = '\033[31m'
+    green = '\033[32m'
+    reset = '\033[0m'
+
+    colored_parts = []
+    for i, part in enumerate(binary_parts):
+        if (i+1) * 8 <= network_bits:
+            colored_parts.append(red + part + reset)
+        elif i * 8 < network_bits < (i+1) * 8:
+            split_index = network_bits - i * 8
+            colored_parts.append(red + part[:split_index] + reset + green + part[split_index:] + reset)
+        else:
+            colored_parts.append(green + part + reset)
+
+    return '.'.join(colored_parts)
+
+
 if __name__ == '__main__':
     ip = ip_input()
     subnet_mask = subnet_input(ip)
@@ -133,12 +155,52 @@ if __name__ == '__main__':
     net_address, broadcast_address, total_ips, host_ips = calculate_addresses(ip, subnet_mask)
     network_bits, host_bits = calculate_bits(subnet_mask)
 
-    print('\nIP in Binär:', ip_binary)
-    print('Netzmaske in Binär:', end=' ')
-    print_colored_binary(subnet_binary, '92', '91')
-    print('\nAnzahl an IPs:', total_ips)
+    print("\n-----------------------------------------")
+    print("""
+    Um die IP-Adresse und die Subnetzmaske in Binärformat zu formatieren, gibt es ein einfaches Muster, dem Sie folgen 
+    können: Die binäre Darstellung der Dezimalzahl 255 lautet:
+    x*2^7 + x*2^6 + x*2^5 + x*2^4 + x*2^3 + x*2^2 + x*2^1 + x*2^0
+    wobei alle Summanden den Faktor x = 1 haben.
+    Umgekehrt hat die binäre Darstellung der Dezimalzahl 0 die gleiche Formel, 
+    aber der Faktor x = 0.
+    Mit dieser Formel können Sie die binäre Darstellung jeder Dezimalzahl finden,
+    indem Sie überprüfen, ob jeder Summand von links nach rechts in die Dezimalzahl passt.
+    Wenn ja, ist der Faktor x = 1, wenn nicht, ist der Faktor x = 0.
+    Der Faktor für jeden Summanden ist die binäre Ziffer.
+    Wenn Sie dies für jedes Oktett durchführen, erhalten Sie die binäre Darstellung der Dezimalzahl.
+    Beispiel:
+    Nehmen Sie die Dezimalzahl 192:
+    Der erste Summand 2^7 = 128 passt, also setzen wir das erste Bit auf 1.
+    192 - 128 = 64
+    Wir nehmen den zweiten Summanden 2^6 = 64, passt also setzen wir das zweite Bit auf 1.
+    64 - 64 = 0, also sind wir in diesem Fall fertig und setzen die anderen Bits auf null.
+    Die binäre Darstellung der Dezimalzahl 192 lautet also 11000000.
+    """)
+    print('\nIP in Binär:', colorize_ip(ip, network_bits))
+    print('Netzmaske in Binär:', colorize_ip(subnet_mask, network_bits))
+    print("\n-------------------Anzahl IPs----------------------")
+    print('Die Anzahl der IPs berechnet sich durch 2^n, wobei n die Anzahl der Nullen bei der Subnetzmaske ist:')
+    print('Anzahl an IPs:', total_ips)
+    print("\n------------------Anzahl Host Adressen-----------------------")
+    print('Die Anzahl der Hostadressen ist dann 2^n-2, da Broadcast- und die Netzadresse selbst abgezogen werden müssen:')
     print('Anzahl an Host-Adressen', host_ips)
-    print('Netzadresse:', net_address)
+    print("\n---------------Netzadresse--------------------------")
+    print("Die Netzadresse berechnet sich durch die logische AND Verknüpfung von IP Adresse und Subnetzmaske in binärer Darstellung:")
+    print(colorize_ip(ip, network_bits))
+    print("AND")
+    print(colorize_ip(subnet_mask, network_bits))
+    print("=")
+    print(colorize_ip(net_address, network_bits))
+    print("zurück in die Dezimalform konvertiert ist die Netzadresse: ")
+    print(net_address)
+    print("\n----------------Broadcast-------------------------")
+    print('Die Broadcast Adresse berechnet sich durch die Netzwerkadresse + 2^n-1, da es die letzte Adresse im Subnetz ist:')
     print('Broadcast Adresse:', broadcast_address)
+    print("\n----------------CIDR-------------------------")
+    print('Die Subnetzmaske in der CIDR Notation berechnet sich durch 32-n:')
+    print(f'Subnetzmaske in CIDR Notation: /{network_bits}')
+    print("\n----------------Netzwerk- & Hostbits-------------------------")
+    print('Die Anzahl der Netzwerkbits ist die gleiche Zahl wie die CIDR Notation und die Anzahl der Host Bits ist 32-Anzahl der Netzwerkbits:')
     print(f'Anzahl der Netzwerk-Bits: {network_bits}')
     print(f'Anzahl der Host-Bits: {host_bits}')
+    print("-----------------------------------------")

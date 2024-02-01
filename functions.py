@@ -1,22 +1,49 @@
 import ipaddress
+import pytest
 
-def is_valid_ip(ip):
-    try:
-        ipaddress.IPv4Address(ip)
-        return True
-    except ipaddress.AddressValueError:
-        try:
-            ipaddress.IPv6Address(ip)
-            return True
-        except ipaddress.AddressValueError:
-            return False
+# def is_valid_ip(ip):
+#     try:
+#         ipaddress.IPv4Address(ip)
+#         return True
+#     except ipaddress.AddressValueError:
+#         try:
+#             ipaddress.IPv6Address(ip)
+#             return True
+#         except ipaddress.AddressValueError:
+#             return False
         
-def is_valid_subnet_mask(ip, subnet_mask):
-    try:
-        network = ipaddress.IPv4Network(f"{ip}/{subnet_mask}", strict=False)
-        return True
-    except ValueError:
+# def is_valid_subnet_mask(ip, subnet_mask):
+#     try:
+#         network = ipaddress.IPv4Network(f"{ip}/{subnet_mask}", strict=False)
+#         return True
+#     except ValueError:
+#         return False
+    
+def is_valid_ip(ip):
+    parts = ip.split('.')
+    if len(parts) != 4:
         return False
+    for item in parts:
+        if not 0 <= int(item) <= 255:
+            return False
+    return True
+
+def is_valid_subnet_mask(ip, subnet_mask):
+    if not is_valid_ip(ip) or not is_valid_ip(subnet_mask):
+        return False
+
+    mask_parts = subnet_mask.split('.')
+    valid_masks = [0, 128, 192, 224, 240, 248, 252, 254, 255]
+    if len(mask_parts) != 4:
+        return False
+
+    for i in range(4):
+        if int(mask_parts[i]) not in valid_masks:
+            return False
+        if i > 0 and int(mask_parts[i-1]) < int(mask_parts[i]):
+            return False
+
+    return True
 
 def mbinary(ip):
     string_ip = str(ip)
